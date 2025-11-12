@@ -11,7 +11,7 @@ Model name is converted to lowercase for the collection name:
 - BlogPost -> "blogs" collection
 """
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, EmailStr
 from typing import Optional
 
 # Example schemas (replace with your own):
@@ -37,6 +37,28 @@ class Product(BaseModel):
     price: float = Field(..., ge=0, description="Price in dollars")
     category: str = Field(..., description="Product category")
     in_stock: bool = Field(True, description="Whether product is in stock")
+
+# SPixLabs app schemas
+
+class Lead(BaseModel):
+    """Contact/lead submissions"""
+    name: str = Field(..., min_length=2)
+    email: EmailStr
+    company: Optional[str] = None
+    phone: Optional[str] = None
+    message: Optional[str] = Field(None, max_length=2000)
+    source: Optional[str] = Field("website", description="Lead source identifier")
+
+class Subscriber(BaseModel):
+    """Newsletter/email capture"""
+    email: EmailStr
+    source: Optional[str] = Field("website", description="Signup source")
+
+class ChatMessage(BaseModel):
+    """Simple chat transcript message for Ask SPix"""
+    session_id: str = Field(..., description="Client-generated session id")
+    role: str = Field(..., pattern="^(user|assistant|system)$")
+    content: str = Field(..., min_length=1)
 
 # Add your own schemas here:
 # --------------------------------------------------
